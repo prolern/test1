@@ -1,15 +1,346 @@
-
-<!DOCTYPE html>
-<html lang="de">
+<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Mein erstes Programm</title>
-</head>
-<body>
-    <h1 id="ausgabe"></h1>
+<meta charset="utf-8">
 
-    <script>
-        document.getElementById("ausgabe").textContent = "Hello World!";
-    </script>
-</body>
-</html>
+
+<!--  
+//===================================================================
+
+ 
+//===================================================================
+
+-->
+
+ <title> PWM </title>
+
+ </head>
+<body bgcolor = "#000000" onload = "erster_start()">
+
+<!-- ========================================================================== -->
+<canvas id="canvas1" width="1000" height="1500" onmousedown="starte_aktion(event)"></canvas>
+<!-- ========================================================================== -->
+ 
+ <script type="text/javascript" >
+ //==================================================================
+ var leinwand = document.getElementById('canvas1').getContext('2d');
+ //==================================================================
+ leinwand.width = 1000;
+ leinwand.height = 800;
+ //=================================================
+// var faure1 = new Image();
+ // faure1.src       = "Faure1.jpg";
+ 
+ //=============================
+ //=============================
+ // Globale Variablen:
+ 
+ var tastgrad = 0.5;
+ var prozent  = 50;
+ var bild_x = 50;
+ var bild_y = 50;
+ var pwm_x = bild_x + 300;
+ var pwm_y = bild_y + 70;
+  
+ var r_plus_x = pwm_x + 33;
+ var r_plus_y = pwm_y + 23;
+ var r_minus_x = r_plus_x;
+ var r_minus_y = r_plus_y + 103;
+ 
+ var button_b = 74;
+ var button_h = 102;
+ //=================================================
+ 
+ var gitter_anzeigen = 0;
+ //=================================================
+ 
+ //#################################################################
+ //#################################################################
+ //#################################################################
+ //#################################################################
+ function erster_start ()
+ {
+   // Initialisierungen:
+   
+   male_grundbild();
+ 
+ 
+ }
+ 
+ 
+ //#################################################################
+ 
+ function male_grundbild()
+ {
+	 
+   // ======================================
+   // ======= Überschrift: =================
+   // ======================================   
+   leinwand.fillStyle = "rgb(50,50,120)";
+   leinwand.fillRect(50,5,830,70);
+ 
+   leinwand.font = "bold 36px Arial";
+   leinwand.fillStyle = "rgb(220,220,220)";
+   leinwand.fillText("Prinzip der PWM (Pulsweitenmodulation)", 80,50);
+   leinwand.fillStyle = "rgb(200,0,0)";
+   leinwand.fillText("Prinzip der PWM (Pulsweitenmodulation)", 82,50);
+
+   // ======================================
+   // ======= Stromkreis:      =============
+   // ======================================   
+   leinwand.lineWidth = 4;
+   leinwand.strokeStyle = 'yellow';
+   
+   leinwand.strokeRect(pwm_x-220,pwm_y+80,740,300);
+   
+   
+   // ======================================
+   // ======= Spannungsquelle: =============
+   // ======================================   
+   
+   leinwand.fillStyle = "rgb(0,100,0)";
+   leinwand.fillRect(bild_x,bild_y + 230, 150,150);  // rot füllen
+   leinwand.lineWidth = 8;
+   leinwand.strokeStyle = 'yellow';
+   leinwand.strokeRect(bild_x,bild_y + 230, 150,150);  // gelber Rand
+ 
+   leinwand.font = "bold 20px Arial";
+   leinwand.fillStyle = "rgb(250,250,250)";
+   leinwand.fillText("Spannungs-", bild_x + 20, bild_y + 290);
+   leinwand.fillText(" quelle", bild_x + 20, bild_y + 330);
+ 
+   // ======================================
+   // ======= PWM-Steuerung: ===============
+   // ======================================   
+   
+   leinwand.fillStyle = "rgb(0,0,150)";
+   leinwand.fillRect(pwm_x, pwm_y, 250,250);  // blau füllen
+   leinwand.lineWidth = 8;
+   leinwand.strokeStyle = "rgb(120,40,40)";
+   leinwand.strokeRect(pwm_x, pwm_y, 250,250);  // Rand
+ 
+   leinwand.font = "bold 20px Arial";
+   leinwand.fillStyle = "rgb(250,250,250)";
+   leinwand.fillText("PWM-Steuerung", pwm_x + 30, pwm_y - 20);
+   
+   // +- Buttons:
+   /*
+   leinwand.fillStyle = "rgb(0,127,0)";
+   leinwand.fillRect(pwm_x+20,pwm_y+10, 100,230);  //  füllen
+   */
+   leinwand.fillStyle = "rgb(0,0,0)";
+   leinwand.fillRect(pwm_x+30,pwm_y+20, 80,210);  // schwarzer Rand
+   
+   //======================================================
+   leinwand.fillStyle = "rgb(0,110,250)";
+   leinwand.fillRect(r_plus_x,r_plus_y, button_b,button_h);  // + Button
+ 
+   leinwand.fillStyle = "rgb(0,60,200)";
+   leinwand.fillRect(r_minus_x,r_minus_y, button_b,button_h);  // - Button
+ 
+   leinwand.font = "bold 96px Arial";
+   leinwand.fillStyle = "rgb(0,0,0)";
+   leinwand.fillText("+", pwm_x + 43, pwm_y + 110);
+   leinwand.fillText("-", pwm_x + 53, pwm_y + 200);
+   
+   //======================================================
+   
+   leinwand.fillStyle = "rgb(0,165,0)";
+   leinwand.fillRect(pwm_x+135,pwm_y+10, 100,230);  // grün füllen
+   
+   leinwand.fillStyle = "rgb(0,0,0)";
+   leinwand.fillRect(pwm_x+145,pwm_y+20, 80,210);  // schwarz
+   
+   // Höhe: 
+   leinwand.fillStyle = "rgb(0,255,0)";
+   
+   var hoehe = parseInt(prozent*210/100);
+   leinwand.fillRect(pwm_x+145,pwm_y+10+ (220- hoehe), 80, hoehe);  // grün füllen
+   
+   // Prozent-Angabe:
+   leinwand.fillStyle = "rgb(0,0,0)";
+   leinwand.fillRect(pwm_x+80,pwm_y+260, 200, 40);  // 
+   leinwand.font = "bold 24px Arial";
+   leinwand.fillStyle = "rgb(250,250,250)";
+   leinwand.fillText("Leistung: " + prozent + " %", pwm_x + 80, pwm_y + 280);
+ 
+   // Lampe: 
+   
+   /*
+   leinwand.lineWidth = 4;
+   leinwand.strokeStyle = 'green';
+   leinwand.beginPath();
+   leinwand.arc(870, 350, 100, 0, 2 * Math.PI);
+   leinwand.stroke();
+   */
+   
+    leinwand.beginPath();
+    leinwand.arc(870, 350, 102, 0, 2 * Math.PI, false);
+    leinwand.fillStyle = "#000000";
+    leinwand.fill();
+	
+	leinwand.lineWidth = 5;
+    leinwand.strokeStyle = "green";
+    leinwand.stroke();
+   
+    leinwand.beginPath();
+    leinwand.arc(870, 350, prozent, 0, 2 * Math.PI, false);
+    leinwand.fillStyle = "#FFFF00";
+    leinwand.fill();
+   
+   
+   /*
+   leinwand.lineWidth = 4;
+   leinwand.strokeStyle = 'yellow';
+   
+   leinwand.beginPath(); // Start a new path
+   leinwand.moveTo(pwm_x + 250, pwm_y + 50); // Move the pen to (30, 50)
+   leinwand.lineTo(pwm_x + 520, pwm_y + 50); // Draw a line to (150, 100)
+   leinwand.lineTo(pwm_x + 520, pwm_y + 180); // Draw a line to (150, 100)
+   leinwand.stroke(); // Render the path
+ */
+ 
+   // Diagramm:
+   leinwand.fillStyle = "rgb(0,0,0)";
+   leinwand.fillRect(100,500,850,200);  // schwarz
+   
+   for (var i=1;i<=8;i++)
+   {
+   
+     if (prozent > 0)
+	 {
+	   leinwand.lineWidth = 4;
+       leinwand.strokeStyle = "rgb(255,0,0)";	   
+	   
+	   if (prozent < 100)
+	   {
+         leinwand.strokeRect(120 + ((i-1)*100), 580, prozent,100);  // 
+	   }
+	   else
+	   {
+	     leinwand.beginPath(); // Start a new path
+         leinwand.moveTo(120, 580); // Move the pen to (30, 50)
+         leinwand.lineTo(900, 580); // Draw a line to (150, 100)
+         leinwand.stroke(); // Render the path
+	   }
+     }
+   }
+   //========================
+   leinwand.lineWidth = 4;
+   leinwand.strokeStyle = "rgb(0,250,250)";
+   
+   leinwand.beginPath(); // Start a new path
+   leinwand.moveTo(120, 550); // Move the pen to (30, 50)
+   leinwand.lineTo(120, 680); // Draw a line to (150, 100)
+   leinwand.lineTo(900, 680); // Draw a line to (150, 100)
+   leinwand.stroke(); // Render the path
+   
+   leinwand.font = "bold 24px Arial";
+   leinwand.fillStyle = "rgb(250,0,0)";
+   leinwand.fillText("U",100,550);
+ 
+   leinwand.fillText("Tastgrad: " + tastgrad,400,550);
+	
+   leinwand.font = "bold 12px Arial";
+   leinwand.fillStyle = "rgb(180,180,180)";
+   leinwand.fillText("Copyright A.Mussotter",leinwand.width- 180,leinwand.height - 80);
+	
+	 if (gitter_anzeigen == 1) gitter();
+ }
+ //#################################################################
+ 
+ //###########################################
+function gitter()
+{
+  var text = "x";
+  
+  leinwand.font = "12px Arial";
+  leinwand.fillStyle = "rgb(0,0,0)";
+  
+  leinwand.beginPath();
+  leinwand.lineWidth = 1;     
+  leinwand.strokeStyle = "rgb(0,200,0)";
+
+  leinwand.beginPath();
+      
+  for (var i=1; i<=20;i++)
+  {
+    leinwand.moveTo (i*50,0);
+    leinwand.lineTo(i*50,700);
+    text = i*50;
+    leinwand.fillText(text, i*50-20,700);
+  }
+  for (var i=1; i<=16;i++)
+  {
+    leinwand.moveTo (0,i*50);
+    leinwand.lineTo(900,i*50);
+    text = i*50;
+    leinwand.fillText(text, 900,i*50);
+  }
+  leinwand.stroke();      
+  leinwand.fill();      
+  leinwand.closePath();
+}
+ //#################################################################
+
+ function starte_aktion(event) 
+{
+  var x = event.offsetX;
+  var y = event.offsetY;
+  var a,b,c,d,q,tmp;
+  var klick_erledigt = false;
+  var ergebnis = false; 
+
+  console.log(" auf x-y geklickt: " + x + "-" + y);
+  
+  //================================================
+  //====== auf Plus klicken: ==================
+  //================================================    
+  a = r_plus_x;b = r_plus_y; c = button_b; d = button_h;
+      
+  if (im_rechteck(x,y,a,b,c,d) == 1) 
+  {    
+    if (parseInt(prozent) <= 95)  prozent += 5;
+	tastgrad = prozent/100;
+	male_grundbild();
+    return;
+  }
+  //================================================
+  //====== auf Minus klicken: ==================
+  //================================================    
+  a = r_minus_x;b = r_minus_y; c = button_b; d = button_h;
+      
+  if (im_rechteck(x,y,a,b,c,d) == 1) 
+  {    
+    if (parseInt(prozent) >= 5) prozent -= 5 ;
+	tastgrad = prozent/100;
+	male_grundbild();
+    return;
+  }
+
+}
+//#################################################################
+function im_rechteck (x,y,a,b,c,d) // Punkt x,y  Rechteck links oben x=a, y=b, Breite=c, Hoehe = d
+{
+  if ((x > a) && (x < (a+c)) )
+  {
+    if ((y > b) && (y < (b+d)) )
+    {
+      return(1);
+    }
+  }
+  return(0);
+}
+//#################################################################
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ </script>
+ 
+
+ </body>
+ </html>
