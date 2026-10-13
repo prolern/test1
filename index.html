@@ -164,13 +164,26 @@ function berechnen() {
             maximumFractionDigits: 6
         }) + " %";
 
-    meldung.textContent =
-        "Die Wahrscheinlichkeit für höchstens " + k +
-        " Treffer bei " + n + " Versuchen beträgt " +
-        (summe * 100).toLocaleString("de-DE", {
-            maximumFractionDigits: 4
-        }) + " %.";
-    meldung.className = "";
+meldung.textContent =
+    "Die Wahrscheinlichkeit für höchstens " + k +
+    " Treffer bei " + n + " Versuchen beträgt " +
+    (summe * 100).toLocaleString("de-DE", {
+        maximumFractionDigits: 4
+    }) + " %. ";
+
+if (summe > 0) {
+    meldung.textContent +=
+        "Das entspricht einem Verhältnis von 1 zu " +
+        (1 / summe).toLocaleString("de-DE", {
+            maximumFractionDigits: 2
+        }) + ".";
+} else {
+    meldung.textContent +=
+        "Ein entsprechendes Verhältnis lässt sich nicht angeben, " +
+        "da die Wahrscheinlichkeit 0 beträgt.";
+}
+
+meldung.className = "";
 }
 
 function fehler(text) {
